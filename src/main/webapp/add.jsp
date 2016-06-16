@@ -30,5 +30,6 @@
                 <button>Save</button>
             </div>
         </form>
+        <a href="index.html">หน้าเรก</a>
     </body>
 </html>

@@ -17,5 +17,7 @@
             String name2 = request.getParameter("name2");
         %>
         บันทึกข้อมูล <%=name%> เเละ <%=name2%> เรียบร้อย
+        </br>
+        <a href="index.html">หน้าเเรก</a>
     </body>
 </html>

@@ -1,0 +1,6 @@
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/DeleteStudentController.java
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/DisplayController.java
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/StudentController.java
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/model/Student.java
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/dao/StudentRepo.java
+/home/best/NetBeansProjects/jpa-servlet-student/src/main/java/th/co/geniustree/student/jpa/servlet/student/UpdateStudentController.java

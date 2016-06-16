@@ -15,10 +15,17 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <form method="post" action="display-controller">
+            Id : <input type="text" name="id">
+            Name : <input type="text" name="name">
+            <input type="submit" value="ค้นหา">
+        </form>
         <table>
             <tr>
                 <td>id</td>
                 <td>name</td>
+                <td>delete</td>
+                <td>Update</td>
             </tr>
             <%
                 List<Student> students = (List<Student>) request.getAttribute("list");
@@ -26,29 +33,28 @@
             <tr>
                 <td><%=students.get(i).getId()%></td>
                 <td><%=students.get(i).getName()%></td>
+                <td><form method="post" action="delete-student">
+                        <input type="hidden" value="<%=students.get(i).getId()%>" name="id">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+                <td><form method="post" action="update.jsp">
+                        <input type="hidden" value="<%=students.get(i).getId()%>" name="id">
+                        <input type="hidden" value="<%=students.get(i).getName()%>" name="name">
+                        <input type="submit" value="Update">
+                    </form></td>
             </tr>
             <%
                 }
             %>
-            <tr>
-
-            </tr>
         </table>
 
-
-
-        <!--<h1><%= students%></h1>-->
-
+        <a href="index.html">หน้าเรก</a>
         <style>
             td{
                 border: solid black 1px;
             }
-/*            table{
-                border: solid black 1px;
-            }*/
-            /*            tr{
-                            border: solid black 2px;
-                        }*/
+
         </style>
 
     </body>

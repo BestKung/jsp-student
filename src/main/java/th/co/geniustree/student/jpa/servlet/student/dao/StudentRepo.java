@@ -23,21 +23,54 @@ import th.co.geniustree.student.jpa.servlet.student.model.Student;
  */
 public class StudentRepo {
 
-    public List<Student> getAll() throws SQLException, ClassNotFoundException {
+    public List<Student> getAll(Student search, Connection connection) {
         List<Student> list = new ArrayList<Student>();
-        Statement stmt;
-        Class.forName("org.h2.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
+        ResultSet resultSet = null;
+        if (search == null) {
+            search.setId("%" + null + "%");
+            search.setName("%" + null + "%");
+        }
+        if (search.getId() == null) {
+            search.setId("%" + null + "%");
+        }
+
+        if (search.getName() == null) {
+            search.setName("%" + null + "%");
+        }
+        String sql = "SELECT * FROM student WHERE id LIKE '%" + search.getId() + "%' AND name LIKE '%" + search.getName() + "%'";
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                Student student = new Student();
+                student.setId(resultSet.getString("id"));
+                student.setName(resultSet.getString("name"));
+                list.add(student);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
+    public List<Student> getAll(Connection connection) {
+        List<Student> list = new ArrayList<Student>();
+        Statement stmt = null;
 
         String sql = "SELECT * FROM student";
-        stmt = connection.createStatement();
-        ResultSet resultSet = stmt.executeQuery(sql);
+        try {
+            stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sql);
 
-        while (resultSet.next()) {
-            Student student = new Student();
-            student.setId(resultSet.getString("id"));
-            student.setName(resultSet.getString("name"));
-            list.add(student);
+            while (resultSet.next()) {
+                Student student = new Student();
+                student.setId(resultSet.getString("id"));
+                student.setName(resultSet.getString("name"));
+                list.add(student);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return list;
@@ -52,14 +85,33 @@ public class StudentRepo {
             preparedStatement.setString(2, student.getName());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
+            System.out.println("insert fail...");
         }
 
+    }
+
+    public void delete(String id, Connection connection) {
+        String sql = "DELETE FROM student WHERE id = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("delete fail...");
+        }
+    }
+
+    public void update(Student student, Connection connection) {
+        String sql = "UPDATE student SET name = ? WHERE id = ?";
+        PreparedStatement preparedStatement;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, student.getName());
+            preparedStatement.setString(2, student.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("update fail...");
+        }
     }
 }

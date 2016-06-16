@@ -108,7 +108,13 @@ public class StudentController extends HttpServlet {
             studentRepo.save(student2, connection);
             connection.commit();
         } catch (SQLException ex) {
-            Logger.getLogger(StudentController.class.getName()).log(Level.SEVERE, null, ex);
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
         } finally {
             if (connection != null) {
                 try {

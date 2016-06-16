@@ -7,6 +7,8 @@ package th.co.geniustree.student.jpa.servlet.student;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -65,8 +67,11 @@ public class DisplayController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         StudentRepo studentRepo = new StudentRepo();
+        Connection connection;
         try {
-            request.setAttribute("list", studentRepo.getAll());
+            Class.forName("org.h2.Driver");
+            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
+            request.setAttribute("list", studentRepo.getAll(connection));
         } catch (SQLException ex) {
             Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -86,7 +91,25 @@ public class DisplayController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String id = request.getParameter("id");
+        String name = request.getParameter("name");
+        Student student = new Student();
+        student.setId(id);
+        student.setName(name);
+        StudentRepo studentRepo = new StudentRepo();
+        Connection connection = null;
+        System.out.println("------------------------------" + student);
+        try {
+            Class.forName("org.h2.Driver");
+            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        request.setAttribute("list", studentRepo.getAll(student, connection));
+        request.getRequestDispatcher("view.jsp").forward(request, response);
     }
 
     /**
