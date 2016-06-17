@@ -86,16 +86,8 @@ public class UpdateStudentController extends HttpServlet {
         student.setId(id);
         student.setName(name);
         System.out.println("-------------------------------------->" + student);
-        try {
-            Class.forName("org.h2.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
-            StudentRepo studentRepo = new StudentRepo();
-            studentRepo.update(student, connection);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(UpdateStudentController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(UpdateStudentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        StudentRepo studentRepo = new StudentRepo();
+        studentRepo.update(student);
 
         request.getRequestDispatcher("info.jsp").forward(request, response);
     }

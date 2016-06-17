@@ -80,18 +80,10 @@ public class DeleteStudentController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
-        try {
-            Class.forName("org.h2.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
-            StudentRepo studentRepo = new StudentRepo();
-            studentRepo.delete(id, connection);
-            request.setAttribute("list", studentRepo.getAll(connection));
-            request.getRequestDispatcher("view.jsp").forward(request, response);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DeleteStudentController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(DeleteStudentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        StudentRepo studentRepo = new StudentRepo();
+        studentRepo.delete(id);
+        request.setAttribute("list", studentRepo.getAll());
+        request.getRequestDispatcher("view.jsp").forward(request, response);
 
     }
 

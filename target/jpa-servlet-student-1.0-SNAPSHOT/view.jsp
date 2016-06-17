@@ -15,11 +15,14 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <h3>ค้นหา</h3>
         <form method="post" action="display-controller">
             Id : <input type="text" name="id">
             Name : <input type="text" name="name">
             <input type="submit" value="ค้นหา">
         </form>
+        <hr/>
+        <h3>นักเรียนทั้งหมด</h3>
         <table>
             <tr>
                 <td>id</td>

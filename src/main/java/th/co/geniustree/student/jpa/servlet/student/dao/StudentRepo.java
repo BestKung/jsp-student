@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import th.co.geniustree.student.jpa.servlet.student.model.Student;
+import th.co.geniustree.student.jpa.servlet.student.service.StudentService;
 
 /**
  *
@@ -23,7 +24,7 @@ import th.co.geniustree.student.jpa.servlet.student.model.Student;
  */
 public class StudentRepo {
 
-    public List<Student> getAll(Student search, Connection connection) {
+    public List<Student> getAll(Student search) {
         List<Student> list = new ArrayList<Student>();
         ResultSet resultSet = null;
         if (search == null) {
@@ -40,6 +41,7 @@ public class StudentRepo {
         String sql = "SELECT * FROM student WHERE id LIKE '%" + search.getId() + "%' AND name LIKE '%" + search.getName() + "%'";
         Statement statement = null;
         try {
+            Connection connection = TransactionManager.connectionThreadLocal.get();
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
@@ -54,12 +56,13 @@ public class StudentRepo {
         return list;
     }
 
-    public List<Student> getAll(Connection connection) {
+    public List<Student> getAll() {
         List<Student> list = new ArrayList<Student>();
         Statement stmt = null;
 
         String sql = "SELECT * FROM student";
         try {
+            Connection connection = TransactionManager.connectionThreadLocal.get();
             stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(sql);
 
@@ -76,24 +79,31 @@ public class StudentRepo {
         return list;
     }
 
-    public void save(Student student, Connection connection) {
+    public void save(Student student) {
         String sql = "INSERT INTO student(id , name) values(?,?)";
         PreparedStatement preparedStatement;
+
         try {
-            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = TransactionManager.connectionThreadLocal.get().prepareStatement(sql);
             preparedStatement.setString(1, student.getId());
             preparedStatement.setString(2, student.getName());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("insert fail...");
+            try {
+                TransactionManager.connectionThreadLocal.get().rollback();
+            } catch (SQLException ex1) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(ex);
         }
 
     }
 
-    public void delete(String id, Connection connection) {
+    public void delete(String id) {
         String sql = "DELETE FROM student WHERE id = ?";
         PreparedStatement preparedStatement;
         try {
+            Connection connection = TransactionManager.connectionThreadLocal.get();
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, id);
             preparedStatement.executeUpdate();
@@ -102,7 +112,8 @@ public class StudentRepo {
         }
     }
 
-    public void update(Student student, Connection connection) {
+    public void update(Student student) {
+        Connection connection = TransactionManager.connectionThreadLocal.get();
         String sql = "UPDATE student SET name = ? WHERE id = ?";
         PreparedStatement preparedStatement;
         try {
@@ -114,4 +125,18 @@ public class StudentRepo {
             System.out.println("update fail...");
         }
     }
+
+    public Connection connectionH2() {
+        Connection connection = null;
+        try {
+            Class.forName("org.h2.Driver");
+            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return connection;
+    }
+
 }

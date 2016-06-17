@@ -67,16 +67,7 @@ public class DisplayController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         StudentRepo studentRepo = new StudentRepo();
-        Connection connection;
-        try {
-            Class.forName("org.h2.Driver");
-            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
-            request.setAttribute("list", studentRepo.getAll(connection));
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        request.setAttribute("list", studentRepo.getAll());
         request.getRequestDispatcher("view.jsp").forward(request, response);
     }
 
@@ -99,16 +90,7 @@ public class DisplayController extends HttpServlet {
         StudentRepo studentRepo = new StudentRepo();
         Connection connection = null;
         System.out.println("------------------------------" + student);
-        try {
-            Class.forName("org.h2.Driver");
-            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplayController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        request.setAttribute("list", studentRepo.getAll(student, connection));
+        request.setAttribute("list", studentRepo.getAll(student));
         request.getRequestDispatcher("view.jsp").forward(request, response);
     }
 

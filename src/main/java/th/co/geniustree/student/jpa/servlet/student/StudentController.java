@@ -7,11 +7,8 @@ package th.co.geniustree.student.jpa.servlet.student;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import th.co.geniustree.student.jpa.servlet.student.dao.StudentRepo;
 import th.co.geniustree.student.jpa.servlet.student.model.Student;
+import th.co.geniustree.student.jpa.servlet.student.service.StudentService;
 
 /**
  *
@@ -92,38 +90,13 @@ public class StudentController extends HttpServlet {
         student.setName(name);
         student2.setId(id2);
         student2.setName(name2);
-        Connection connection = null;
-        try {
-            Class.forName("org.h2.Driver");
-            connection = DriverManager.getConnection("jdbc:h2:~/studenttest;AUTO_SERVER=TRUE");
-        } catch (SQLException ex) {
-            Logger.getLogger(StudentController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(StudentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        try {
-            connection.setAutoCommit(false);
-            studentRepo.save(student, connection);
-            studentRepo.save(student2, connection);
-            connection.commit();
-        } catch (SQLException ex) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(StudentRepo.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(StudentController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+        StudentService studentService = new StudentService();
+        List<Student> students = new ArrayList<Student>();
+        students.add(student);
+        students.add(student2);
+        studentService.save(students);
+//        studentRepo.save(student);
+//        studentRepo.save(student2);
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("info.jsp");
 
